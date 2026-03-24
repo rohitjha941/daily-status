@@ -36,6 +36,7 @@ cp .env.example .env
 
 | Variable | Required | Description |
 |---|---|---|
+| `GH_TOKEN` | Yes | GitHub token used by the `gh` CLI inside the container |
 | `GITHUB_ORG` | Yes | GitHub org to search PRs in |
 | `JIRA_BASE_URL` | Yes | e.g. `https://yourcompany.atlassian.net` |
 | `JIRA_USER_EMAIL` | Yes | Your Jira account email |
@@ -81,7 +82,6 @@ docker build -t daily-status .
 ```bash
 docker run --rm \
   --env-file .env \
-  -e GH_TOKEN=$(gh auth token) \
   daily-status
 ```
 
@@ -90,11 +90,10 @@ docker run --rm \
 ```bash
 docker run --rm \
   --env-file .env \
-  -e GH_TOKEN=$(gh auth token) \
   daily-status --slack
 ```
 
-> `GH_TOKEN` is required for the `gh` CLI to authenticate inside the container. `gh auth token` prints your current token.
+> `GH_TOKEN` is required for the `gh` CLI to authenticate inside the container. You can either store it in `.env` or pass it at runtime with `-e GH_TOKEN=$(gh auth token)`.
 
 ## Output example
 

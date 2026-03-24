@@ -1,0 +1,19 @@
+services:
+  daily-status:
+    profiles:
+      - jobs
+    build:
+      context: .
+    image: daily-status:latest
+    environment:
+      - GH_TOKEN=${GH_TOKEN}
+      - GITHUB_ORG=${GITHUB_ORG:-ThriveMarket}
+      - JIRA_BASE_URL=${JIRA_BASE_URL}
+      - JIRA_USER_EMAIL=${JIRA_USER_EMAIL}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}
+      - SLACK_THREAD_KEYWORD=${SLACK_THREAD_KEYWORD:-Daily Status Updates}
+      - LOOKBACK_HOURS=${LOOKBACK_HOURS:-14}
+    command: ["--slack"]
+    restart: "no"
