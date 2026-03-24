@@ -5,14 +5,16 @@ services:
     build:
       context: .
     image: daily-status:latest
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      - GH_TOKEN=${GH_TOKEN}
+      - INFISICAL_TOKEN=${INFISICAL_TOKEN}
+      - INFISICAL_PROJECT_ID=${INFISICAL_PROJECT_ID}
+      - INFISICAL_ENV=${INFISICAL_ENV:-dev}
+      - INFISICAL_PATH=${INFISICAL_PATH:-/}
+      - INFISICAL_API_URL=${INFISICAL_API_URL:-http://host.docker.internal:8085/api}
+      - INFISICAL_DISABLE_UPDATE_CHECK=true
       - GITHUB_ORG=${GITHUB_ORG:-ThriveMarket}
-      - JIRA_BASE_URL=${JIRA_BASE_URL}
-      - JIRA_USER_EMAIL=${JIRA_USER_EMAIL}
-      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
-      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
-      - SLACK_CHANNEL_ID=${SLACK_CHANNEL_ID}
       - SLACK_THREAD_KEYWORD=${SLACK_THREAD_KEYWORD:-Daily Status Updates}
       - LOOKBACK_HOURS=${LOOKBACK_HOURS:-14}
     command: ["--slack"]

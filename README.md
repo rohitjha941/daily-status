@@ -36,7 +36,11 @@ cp .env.example .env
 
 | Variable | Required | Description |
 |---|---|---|
-| `GH_TOKEN` | Yes | GitHub token used by the `gh` CLI inside the container |
+| `INFISICAL_TOKEN` | Yes | Infisical service token or machine identity access token |
+| `INFISICAL_PROJECT_ID` | Yes | Project ID to read secrets from |
+| `INFISICAL_ENV` | No | Secret environment to read from (default: `dev`) |
+| `INFISICAL_PATH` | No | Secret path/folder to read from (default: `/`) |
+| `INFISICAL_API_URL` | For self-hosted | Base API URL for your Infisical instance |
 | `GITHUB_ORG` | Yes | GitHub org to search PRs in |
 | `JIRA_BASE_URL` | Yes | e.g. `https://yourcompany.atlassian.net` |
 | `JIRA_USER_EMAIL` | Yes | Your Jira account email |
@@ -93,7 +97,8 @@ docker run --rm \
   daily-status --slack
 ```
 
-> `GH_TOKEN` is required for the `gh` CLI to authenticate inside the container. You can either store it in `.env` or pass it at runtime with `-e GH_TOKEN=$(gh auth token)`.
+The container starts with `infisical run`, then launches `uv run daily_status.py`.
+Store the app secrets in Infisical and pass only the Infisical auth/config values into the container.
 
 ## Output example
 
