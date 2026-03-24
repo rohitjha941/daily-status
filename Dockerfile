@@ -1,22 +1,17 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
-# Install gh CLI, curl, and Infisical CLI
 ARG INFISICAL_VERSION=0.43.60
-ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl ca-certificates && \
-    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-      -o /usr/share/keyrings/githubcli-archive-keyring.gpg && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
-      > /etc/apt/sources.list.d/github-cli.list && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends gh && \
-    curl -fsSL -o /tmp/infisical.deb \
-      "https://github.com/Infisical/cli/releases/download/v${INFISICAL_VERSION}/infisical_${INFISICAL_VERSION}_linux_amd64.deb" && \
-    dpkg -i /tmp/infisical.deb || apt-get install -f -y && \
-    rm -f /tmp/infisical.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache bash curl github-cli && \
+    case "$(apk --print-arch)" in \
+      x86_64) infisical_arch=amd64 ;; \
+      aarch64) infisical_arch=arm64 ;; \
+      *) echo "unsupported architecture: $(apk --print-arch)" >&2; exit 1 ;; \
+    esac && \
+    curl -fsSL -o /tmp/infisical.apk \
+      "https://github.com/Infisical/cli/releases/download/v${INFISICAL_VERSION}/infisical_${INFISICAL_VERSION}_linux_${infisical_arch}.apk" && \
+    apk add --allow-untrusted --no-cache /tmp/infisical.apk && \
+    rm -f /tmp/infisical.apk
 
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv

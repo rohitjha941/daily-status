@@ -78,7 +78,7 @@ uv run daily_status.py --slack
 ### Build
 
 ```bash
-docker build -t daily-status .
+docker build -t daily-status:latest .
 ```
 
 ### Run (print only)
@@ -99,6 +99,34 @@ docker run --rm \
 
 The container starts with `infisical run`, then launches `uv run daily_status.py`.
 Store the app secrets in Infisical and pass only the Infisical auth/config values into the container.
+
+## Ofelia schedule
+
+The main homelab stack includes a single Ofelia scheduler container. `daily-status` is scheduled as an ephemeral `job-run` container:
+
+- schedule: Tuesday through Saturday at 4:00 AM IST
+- command: `--slack`
+- image: `daily-status:latest`
+
+Ofelia reads these host-side variables from the root stack environment when it starts:
+
+| Variable | Required | Description |
+|---|---|---|
+| `DAILY_STATUS_INFISICAL_TOKEN` | Yes | Infisical service token for the ThriveMarket project |
+| `DAILY_STATUS_INFISICAL_PROJECT_ID` | Yes | ThriveMarket Infisical project ID |
+| `DAILY_STATUS_INFISICAL_ENV` | No | Secret environment to read from (default: `dev`) |
+| `DAILY_STATUS_INFISICAL_PATH` | No | Secret path/folder to read from (default: `/`) |
+| `DAILY_STATUS_INFISICAL_API_URL` | No | Infisical API URL (default: `https://infisical.arcdevil.com/api`) |
+| `DAILY_STATUS_GITHUB_ORG` | No | GitHub org override (default: `ThriveMarket`) |
+| `DAILY_STATUS_SLACK_THREAD_KEYWORD` | No | Slack thread title match (default: `Daily Status Updates`) |
+| `DAILY_STATUS_LOOKBACK_HOURS` | No | Lookback window (default: `14`) |
+
+Build the image before relying on the schedule:
+
+```bash
+docker compose build daily-status
+docker compose up -d ofelia
+```
 
 ## Output example
 
