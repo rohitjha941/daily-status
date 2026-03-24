@@ -2,6 +2,7 @@ FROM python:3.12-slim
 
 # Install gh CLI, curl, and Infisical CLI
 ARG INFISICAL_VERSION=0.43.60
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl ca-certificates && \
@@ -13,7 +14,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gh && \
     curl -fsSL -o /tmp/infisical.deb \
       "https://github.com/Infisical/cli/releases/download/v${INFISICAL_VERSION}/infisical_${INFISICAL_VERSION}_linux_amd64.deb" && \
-    apt-get install -y --no-install-recommends /tmp/infisical.deb && \
+    dpkg -i /tmp/infisical.deb || apt-get install -f -y && \
     rm -f /tmp/infisical.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
